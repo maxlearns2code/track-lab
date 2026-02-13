@@ -1,5 +1,6 @@
 import { Layout } from '@/components/Layout';
-import { Card, CardHeader, CardTitle } from '@/components/ui/card';
+import { Player } from '@/components/Player';
+import { TrackCard } from '@/components/TrackCard';
 import { TabsContent } from '@/components/ui/tabs';
 import { useGeolocation } from '@/hooks/useGeolocation';
 import { Track, Weather, endpoints } from '@/services/api';
@@ -7,48 +8,70 @@ import { Loader2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 function App() {
-  const { location, error: locationError } = useGeolocation();
+  const { location } = useGeolocation();
   const [weather, setWeather] = useState<Weather | null>(null);
   const [tracks, setTracks] = useState<Track[]>([]);
-  const [favorites, setFavorites] = useState<any[]>([]);
+  const [favorites, setFavorites] = useState<Track[]>([]);
   const [currentTab, setCurrentTab] = useState('explore');
   const [loading, setLoading] = useState(false);
+  const [currentTrack, setCurrentTrack] = useState<Track | null>(null);
 
-  // 1. Fetch Weather when Location is ready
+  // 1. Fetch Weather
   useEffect(() => {
     if (location) {
       endpoints.getWeather(location.lat, location.lon)
         .then(res => setWeather(res.data))
-        .catch(err => console.error('Weather error:', err));
+        .catch(console.error);
     }
   }, [location]);
 
-  // 2. Fetch Music when Weather is ready (Context-Aware)
+  // 2. Fetch Music
   useEffect(() => {
     if (weather) {
       setLoading(true);
-      // Simple mapping: Clear sky -> 'happy', Rain -> 'calm', etc.
-      // For now, we just use a default or 'pop' if undefined
       const vibe = weather.is_day ? 'pop' : 'chill';
-      
       endpoints.getMusic(vibe)
         .then(res => {
           setTracks(res.data);
           setLoading(false);
         })
-        .catch(err => {
-          console.error('Music error:', err);
-          setLoading(false);
-        });
+        .catch(() => setLoading(false));
     }
   }, [weather]);
 
-  // 3. Fetch Favorites on load
+  // 3. Fetch Favorites
+  const fetchFavorites = () => {
+    endpoints.getFavorites().then(res => setFavorites(res.data));
+  };
+
   useEffect(() => {
-    endpoints.getFavorites()
-      .then(res => setFavorites(res.data))
-      .catch(console.error);
+    fetchFavorites();
   }, []);
+
+  // Handlers
+  const handlePlay = (track: Track) => setCurrentTrack(track);
+
+  const handleToggleFavorite = async (track: Track) => {
+    // Check if track is already in favorites (either by API ID or DB ID)
+    const isFav = favorites.find(f => f.id === track.id || (f as any).jamendo_id === track.id);
+    
+    if (isFav) {
+      // Remove
+      // Optimistic Update
+      setFavorites(prev => prev.filter(f => f.id !== isFav.id));
+      await endpoints.removeFavorite(isFav.id);
+    } else {
+      // Add
+      // Backend expects { jamendo_id, name, artist_name, image, audio_url }
+      await endpoints.addFavorite({
+        jamendo_id: track.id,
+        name: track.name,
+        artist_name: track.artist_name,
+        image: track.image,
+        audio_url: track.audio
+      }).then(fetchFavorites); 
+    }
+  };
 
   return (
     <Layout 
@@ -57,7 +80,7 @@ function App() {
       currentTab={currentTab}
       onTabChange={setCurrentTab}
     >
-      <div className="flex-1 overflow-y-auto p-4 pb-24">
+      <div className="flex-1 overflow-y-auto p-4 pb-32">
         <TabsContent value="explore" className="space-y-4 data-[state=active]:block">
           <h2 className="text-2xl font-bold mb-4">Recommended for {weather?.is_day ? 'Day' : 'Night'}</h2>
           
@@ -69,17 +92,13 @@ function App() {
 
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {tracks.map(track => (
-              <Card key={track.id} className="overflow-hidden">
-                <img 
-                  src={track.image} 
-                  alt={track.name} 
-                  className="w-full h-48 object-cover transition-all hover:scale-105"
-                />
-                <CardHeader className="p-4">
-                  <CardTitle className="text-lg truncate">{track.name}</CardTitle>
-                  <p className="text-sm text-muted-foreground truncate">{track.artist_name}</p>
-                </CardHeader>
-              </Card>
+              <TrackCard 
+                key={track.id} 
+                track={track}
+                isFavorite={!!favorites.find(f => (f as any).jamendo_id === track.id)}
+                onPlay={handlePlay}
+                onToggleFavorite={handleToggleFavorite}
+              />
             ))}
           </div>
         </TabsContent>
@@ -89,20 +108,27 @@ function App() {
           {favorites.length === 0 ? (
              <p className="text-muted-foreground text-center py-10">No favorites yet.</p>
           ) : (
-             <div className="grid gap-4">
+             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {favorites.map(fav => (
-                  <Card key={fav.id} className="flex items-center p-2 gap-4">
-                     <img src={fav.image} className="w-16 h-16 rounded object-cover" />
-                     <div>
-                        <h3 className="font-bold">{fav.name}</h3>
-                        <p className="text-sm">{fav.artist_name}</p>
-                     </div>
-                  </Card>
+                  <TrackCard 
+                    key={fav.id} 
+                    // Normalize DB track to UI track
+                    track={{
+                        ...fav, 
+                        id: (fav as any).jamendo_id || fav.id, // Use Jamendo ID for display if possible
+                        audio: (fav as any).audio_url || fav.audio
+                    }} 
+                    isFavorite={true}
+                    onPlay={handlePlay}
+                    onToggleFavorite={handleToggleFavorite}
+                  />
                 ))}
              </div>
           )}
         </TabsContent>
       </div>
+      
+      <Player currentTrack={currentTrack} />
     </Layout>
   );
 }
