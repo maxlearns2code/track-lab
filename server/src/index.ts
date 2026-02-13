@@ -20,11 +20,13 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
+import favoritesRoutes from './routes/favoritesRoutes';
 import musicRoutes from './routes/musicRoutes';
 import weatherRoutes from './routes/weatherRoutes';
 
 app.use('/api/weather', weatherRoutes);
 app.use('/api/music', musicRoutes);
+app.use('/api/favorites', favoritesRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
