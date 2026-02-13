@@ -2,7 +2,12 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
 
+import { initDb } from './models/initDb';
+
 dotenv.config();
+
+// Initialize DB
+initDb();
 
 const app = express();
 const PORT = process.env.PORT || 3001;
