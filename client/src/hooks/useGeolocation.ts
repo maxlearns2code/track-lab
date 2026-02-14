@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 export interface Location {
   lat: number;
@@ -29,7 +29,7 @@ export const useGeolocation = () => {
         setError('Unable to retrieve your location');
         setLoading(false);
         // Fallback to Paris for dev/demo purposes if blocked
-        console.warn('Geolocation blocked, defaulting to Paris for demo');
+        console.warn('Geolocation blocked, defaulting to Paris for demo', err);
         setLocation({ lat: 48.8566, lon: 2.3522 }); 
       }
     );
