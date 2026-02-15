@@ -1,4 +1,3 @@
-import { Badge } from '@/components/ui/badge';
 import { Weather } from '@/services/api';
 import { Cloud, MapPin, Sun } from 'lucide-react';
 
@@ -9,25 +8,22 @@ interface WeatherHeaderProps {
 
 export function WeatherHeader({ weather, locationName }: WeatherHeaderProps) {
   return (
-    <header className="sticky top-0 z-10 bg-white/10 backdrop-blur-md border-b border-white/20 p-4 transition-all">
+    <header className="sticky top-0 z-10 bg-background p-6 pt-8 transition-all">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold tracking-tight flex items-center gap-2">
-          TrackLab <span className="text-primary text-xs font-normal opacity-50">v1.0</span>
+        <h1 className="text-2xl font-bold tracking-tighter flex items-center gap-2 font-heading">
+          TrackLab
         </h1>
         
         <div className="flex items-center gap-2">
-          {locationName && (
-            <Badge variant="outline" className="flex gap-1 items-center">
-              <MapPin className="h-3 w-3" />
-              {locationName}
-            </Badge>
-          )}
-          
+          {/* Minimalist Weather Icon Only */}
           {weather && (
-            <Badge variant="secondary" className="flex gap-1 items-center">
-              {weather.is_day ? <Sun className="h-3 w-3" /> : <Cloud className="h-3 w-3" />}
-              {weather.temperature}°C
-            </Badge>
+             <div className="flex items-center gap-2 text-muted-foreground bg-secondary/30 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-medium border border-border/50">
+                {weather.is_day ? <Sun className="h-3 w-3" /> : <Cloud className="h-3 w-3" />}
+                <span>{weather.temperature}°</span>
+                <span className="opacity-50">|</span>
+                <MapPin className="h-3 w-3" />
+                <span>{locationName || "Locating..."}</span>
+             </div>
           )}
         </div>
       </div>

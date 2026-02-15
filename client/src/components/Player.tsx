@@ -43,7 +43,7 @@ export function Player({ currentTrack }: PlayerProps) {
       />
 
       {/* Capsule Player */}
-      <div className="fixed bottom-20 left-4 right-4 md:left-1/2 md:-translate-x-1/2 md:w-full md:max-w-md h-16 bg-slate-900/40 backdrop-blur-xl border border-white/10 shadow-2xl rounded-full flex items-center px-2 pr-4 gap-3 z-50 transition-all duration-500 hover:scale-105 active:scale-100">
+      <div className="fixed bottom-24 left-4 right-4 md:left-1/2 md:-translate-x-1/2 md:w-full md:max-w-md h-16 bg-slate-900 border border-slate-800 shadow-2xl rounded-full flex items-center px-2 pr-4 gap-3 z-50 transition-all duration-500 hover:scale-105 active:scale-100">
         <audio ref={audioRef} onEnded={() => setIsPlaying(false)} />
         
         {/* Spinning Vinyl / Art */}

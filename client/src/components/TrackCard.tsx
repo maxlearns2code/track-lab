@@ -1,5 +1,4 @@
 import { Button } from '@/components/ui/button';
-import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { Track } from '@/services/api';
 import { Heart, Play } from 'lucide-react';
@@ -13,37 +12,40 @@ interface TrackCardProps {
 
 export function TrackCard({ track, isFavorite, onPlay, onToggleFavorite }: TrackCardProps) {
   return (
-    <Card className="overflow-hidden group relative border-white/10 bg-white/5 backdrop-blur-sm hover:bg-white/10 transition-all duration-300">
-      <div className="relative">
+    <div className="group flex items-center gap-4 p-3 rounded-xl hover:bg-white/5 transition-colors border border-transparent hover:border-white/5">
+      {/* Album Art (Left) */}
+      <div className="relative shrink-0 w-16 h-16 rounded-lg overflow-hidden bg-white/10">
         <img 
           src={track.image} 
           alt={track.name} 
-          className="w-full h-48 object-cover transition-all duration-500 group-hover:scale-105"
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
         />
-        
-        {/* Hover Overlay */}
-        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-4">
-          <Button size="icon" variant="secondary" className="rounded-full scale-90 group-hover:scale-100 transition-transform duration-300" onClick={() => onPlay(track)}>
-            <Play className="h-5 w-5 fill-current" />
-          </Button>
+        {/* Play Overlay - Only on Hover */}
+        <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+           <Button size="icon" variant="ghost" className="h-8 w-8 text-white hover:text-white hover:bg-transparent" onClick={() => onPlay(track)}>
+             <Play className="h-4 w-4 fill-current" />
+           </Button>
         </div>
       </div>
       
-      <CardHeader className="p-3 flex flex-row items-center justify-between space-y-0">
-        <div className="overflow-hidden pr-2">
-          <CardTitle className="text-base truncate font-heading tracking-wide text-foreground/90">{track.name}</CardTitle>
-          <p className="text-xs text-muted-foreground truncate">{track.artist_name}</p>
-        </div>
-        
-        <Button 
-          size="icon" 
-          variant="ghost" 
-          className={cn("shrink-0 hover:bg-white/10", isFavorite ? "text-red-500 hover:text-red-600" : "text-muted-foreground")}
-          onClick={() => onToggleFavorite(track)}
-        >
-          <Heart className={cn("h-5 w-5 transition-transform active:scale-90", isFavorite && "fill-current")} />
-        </Button>
-      </CardHeader>
-    </Card>
+      {/* Text Info (Middle) */}
+      <div className="flex-1 min-w-0 flex flex-col justify-center">
+        <h3 className="font-heading font-bold text-base leading-tight truncate text-foreground/90">{track.name}</h3>
+        <p className="text-sm text-muted-foreground truncate">{track.artist_name}</p>
+      </div>
+      
+      {/* Actions (Right) */}
+      <div className="shrink-0 flex items-center gap-2">
+         {/* Duration could go here if available */}
+         <Button 
+           size="icon" 
+           variant="ghost" 
+           className={cn("h-9 w-9 rounded-full text-muted-foreground hover:text-red-500 hover:bg-red-500/10", isFavorite && "text-red-500 bg-red-500/10")}
+           onClick={() => onToggleFavorite(track)}
+         >
+           <Heart className={cn("h-5 w-5 transition-transform active:scale-90", isFavorite && "fill-current")} />
+         </Button>
+      </div>
+    </div>
   );
 }
