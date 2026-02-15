@@ -9,7 +9,7 @@ interface WeatherHeaderProps {
 
 export function WeatherHeader({ weather, locationName }: WeatherHeaderProps) {
   return (
-    <header className="sticky top-0 z-10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b p-4">
+    <header className="sticky top-0 z-10 bg-white/10 backdrop-blur-md border-b border-white/20 p-4 transition-all">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-bold tracking-tight flex items-center gap-2">
           TrackLab <span className="text-primary text-xs font-normal opacity-50">v1.0</span>
