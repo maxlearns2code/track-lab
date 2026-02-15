@@ -3,7 +3,14 @@
 A Context-Aware Music Dashboard built for an interview case study.
 It suggests music based on your current **Weather** and **Location**.
 
-## 🏗️ Tech Stack
+## � Live Demo
+[**Click to View Live App**](https://track-lab-iota.vercel.app/)
+
+<p align="center">
+  <img src="client/public/Screenshot.png" alt="TrackLab Mobile Interface" width="300" style="border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+</p>
+
+## �🏗️ Tech Stack
 -   **Frontend**: React (Vite) + Tailwind CSS
 -   **Backend**: Node.js + Express + TypeScript
 -   **Database**: PostgreSQL (Stores User Favorites)
@@ -11,6 +18,14 @@ It suggests music based on your current **Weather** and **Location**.
 -   **APIs**:
     -   [Open-Meteo](https://open-meteo.com/) (Weather)
     -   [Jamendo](https://developer.jamendo.com/) (Music Search)
+
+## 🎨 Design & UI (v2.0 Overhaul)
+The application features a premium **Flat Editorial Design** focused on content and micro-interactions:
+-   **Editorial Aesthetic**: High-contrast, bold typography with a "magazine" feel.
+-   **Row Layout (List View)**: Dense, scannable track lists with horizontal cards.
+-   **Capsule Notification**: A "Dynamic Island" style floating toast with a golden glow for likes.
+-   **Capsule Player**: A floating persistent player with vinyl spin animations.
+-   **Micro-interactions**: Subtle hover states, tactile button feedback, and smooth transitions.
 
 ## 🚀 Getting Started
 
